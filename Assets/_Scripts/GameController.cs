@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textInitial;
     private bool textInitialRunning = true;
     private bool callInformation = false;
+    private bool firstGiant = false;
 
     // Start is called before the first frame update
     void Awake(){
@@ -123,9 +124,10 @@ public class GameController : MonoBehaviour
             if(!callInformation){
                 Information();
             }
-            if(!textInitialRunning){
+            if(!textInitialRunning && !firstGiant){
                 spawnState = SpawnState.SPAWNING;
                 Spawner();
+                firstGiant = true;
             }
         }
 

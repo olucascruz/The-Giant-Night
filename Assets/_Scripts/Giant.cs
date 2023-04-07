@@ -88,9 +88,6 @@ public class Giant : MonoBehaviour
         
         if(target.Length > 1){
             walkPoint = target[targetSelected].transform.position;
-            print("SearchWalkPoint is something");
-            Debug.Log(walkPoint);
-
             walkPointSet = true;
         }
     }

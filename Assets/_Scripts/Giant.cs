@@ -65,7 +65,6 @@ public class Giant : MonoBehaviour
     }
 
     private void Running(){
-        
         if(!walkPointSet){
             SearchWalkPoint();
         }
@@ -86,8 +85,12 @@ public class Giant : MonoBehaviour
 
     private void SearchWalkPoint()
     {
-        if(target.Length < 1){
+        
+        if(target.Length > 1){
             walkPoint = target[targetSelected].transform.position;
+            print("SearchWalkPoint is something");
+            Debug.Log(walkPoint);
+
             walkPointSet = true;
         }
     }

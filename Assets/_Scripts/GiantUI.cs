@@ -12,12 +12,14 @@ public class GiantUI : MonoBehaviour
     private int maxHealth;
     private int currentHealth;
     
-    [SerializeField]
-    private Image healthBar;
+    [SerializeField] private Image healthBar;
+    
+    private GameObject player;
     
     // Start is called before the first frame update
     void Start()
     {
+        player = GameObject.FindWithTag("Player");
         maxHealth = giantAttributes.lifeGiant;    
         healthBar.fillAmount = 1;   
     }
@@ -30,6 +32,7 @@ public class GiantUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        transform.LookAt(player.transform);
         healthBar.fillAmount = GetHealthAsFraction();
     }
 }

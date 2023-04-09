@@ -8,18 +8,15 @@ public class PlayerUI : MonoBehaviour
 {   
     [SerializeField]
     private PlayerAttributes playerAttributes;
+    
+    private int maxHealth, currentHealth;
 
-    private int maxHealth;
-    private int currentHealth;
     [SerializeField]
     private Image healthBar;
     
     [SerializeField]
     private Image[] manaBar;
-    // Start is called before the first frame update
 
-    
-    
 
     void Start()
     {
@@ -32,7 +29,6 @@ public class PlayerUI : MonoBehaviour
         return Mathf.Clamp01((float) playerAttributes.lifePlayer / maxHealth);
     }
 
-    // Update is called once per frame
     void Update()
     {
         healthBar.fillAmount = GetHealthAsFraction();

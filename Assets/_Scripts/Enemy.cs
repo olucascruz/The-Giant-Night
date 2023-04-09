@@ -6,6 +6,7 @@ public class Enemy : MonoBehaviour
 {
 
     [ SerializeField ] private int enemyLife;
+    public int EnemyLife { get { return enemyLife; } }
     [ SerializeField ] private Renderer enemyRenderer;
     private bool canTakeDamage = true;
 
@@ -16,11 +17,15 @@ public class Enemy : MonoBehaviour
 
     private Vector3 startPos; 
     
+   
     void Start(){
+        Material originalMaterial = enemyRenderer.material;
+        Material myMaterial = Instantiate(originalMaterial);
+        enemyRenderer.material = myMaterial;
+
         gc = GameController.gc;
         enemyRenderer.material.SetFloat("_DissolveAmount", 0f);
-        giantAttributes.lifeGiant = enemyLife;
-        giantAttributes.lifeGiant = enemyLife;
+        enemyLife = giantAttributes.lifeGiant;
         startPos = this.gameObject.transform.position;
 
     }
@@ -61,10 +66,10 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator TakeDamage(){
         canTakeDamage = false;
-        if(giantAttributes.lifeGiant > 0)
-            giantAttributes.lifeGiant--;
+        if(enemyLife > 0)
+            enemyLife--;
 
-        if(giantAttributes.lifeGiant == 0)
+        if(enemyLife == 0)
             StartCoroutine(Disappear());
 
         yield return new WaitForSeconds(0.2f);
@@ -74,6 +79,7 @@ public class Enemy : MonoBehaviour
     void Death(){
         gc.enemiesDied++;
         gameObject.SetActive(false);
+        enemyRenderer.material.SetFloat("_DissolveAmount", 0f);
         transform.position = new Vector3(startPos.x, startPos.y, startPos.z);
     }   
 }

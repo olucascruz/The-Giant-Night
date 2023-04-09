@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf06a581b0fbd634288760b4259477f8, type: 3}
   m_Name: GiantAttributes
   m_EditorClassIdentifier: 
-  lifeGiant: 2
+  lifeGiant: 5
   damageAttack: 0

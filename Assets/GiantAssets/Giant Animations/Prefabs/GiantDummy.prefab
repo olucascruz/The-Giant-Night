@@ -193,6 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   giantAttributes: {fileID: 11400000, guid: eeaa3df8b98403b41aed10cb587f5d40, type: 2}
   healthBar: {fileID: 211623379}
+  giant: {fileID: 8061654117059054286}
 --- !u!1 &566427816
 GameObject:
   m_ObjectHideFlags: 0

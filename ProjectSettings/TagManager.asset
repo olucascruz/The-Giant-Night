@@ -7,6 +7,7 @@ TagManager:
   - PlayerAttack
   - EnemyTarget
   - FrontWall
+  - Sphere
   layers:
   - Default
   - TransparentFX

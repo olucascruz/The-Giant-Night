@@ -37,8 +37,6 @@ public class SpawnSystem : MonoBehaviour
     }
 
     public void Spawner(int max, float time){
-        print("Max: " + max.ToString());
-        print("Time: " + time.ToString());
         if(enemys.Count == maxEnemys){
             StartCoroutine(CoroutineSpawner(max, time));
         }
@@ -47,7 +45,6 @@ public class SpawnSystem : MonoBehaviour
     private IEnumerator CoroutineSpawner(int max, float time){
         if(max >= enemys.Count) max = enemys.Count; 
         for(int i = 0; i < max; i++){
-            print(i);
             enemys[i].SetActive(true);
             yield return new WaitForSeconds(time);
         }

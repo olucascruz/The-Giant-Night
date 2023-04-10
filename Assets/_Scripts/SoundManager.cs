@@ -26,7 +26,7 @@ public class SoundManager : MonoBehaviour
     }
 
     void Update(){
-        if (gc.gameState == GameController.GameState.PAUSE)
+        if (gc.gameState == GameController.GameState.PAUSE || gc.gameState == GameController.GameState.GAMEOVER)
         {
             heavyImpact.Pause();
             stepsGiant.Pause();

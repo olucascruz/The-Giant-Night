@@ -28,17 +28,24 @@ public class Player : MonoBehaviour
 
     private bool isGround;
 
-    private int playerLife = 100;
+    private int playerLife = 10;
+    private int playerMana = 3;
+    public int PlayerLife { get { return playerLife; } }
+    public int PlayerMana { get { return playerMana; } }
+    public int RechargeMana { set { playerMana = value; }  get {return playerMana;}}
+
 
     private bool canAttack = true;
 
     private GameController gc;
-    // Start is called before the first frame update
+  
+
     void Start()
     {
         gc = GameController.gc;
-        playerAttributes.lifePlayer = playerLife;
-        playerAttributes.manaPlayer = 3;
+        playerLife = playerAttributes.lifePlayer;
+        playerMana = playerAttributes.manaPlayer;
+
         Giant.onAttackPlayer += TakeDamage; 
         rb = this.GetComponent<Rigidbody>();
     }
@@ -47,9 +54,13 @@ public class Player : MonoBehaviour
         SpeedControl();
     }
 
-    // Update is called once per frame
+ 
     void FixedUpdate()
-    {
+    {   
+        if(RechargeMana > 3){
+            RechargeMana = 3;
+        }
+
         if (gc.gameState != GameController.GameState.PAUSE)
         {
             Move();
@@ -98,7 +109,7 @@ public class Player : MonoBehaviour
         if(Input.GetMouseButtonDown(0) &&
             isGround &&
             canAttack &&
-            playerAttributes.manaPlayer > 0){
+            playerMana > 0){
             
             canAttack = false;
             UseMana();
@@ -141,13 +152,13 @@ public class Player : MonoBehaviour
     }
     
     private IEnumerator DecrementLife(){
-        if(playerAttributes.lifePlayer > 0)
-            playerAttributes.lifePlayer--;
+        if(playerLife > 0)
+            playerLife--;
         yield return new WaitForSeconds(0.2f);
     }
 
     private void UseMana(){
-        if(playerAttributes.manaPlayer > 0)
-            playerAttributes.manaPlayer--;
+        if(playerMana > 0)
+            playerMana--;
     }
 }

@@ -8,7 +8,7 @@ using TMPro;
 public class GameController : MonoBehaviour
 {
     public enum SpawnState {SPAWNING, COUNTING, WAITING};
-    public enum GameState {PLAY, PAUSE};
+    public enum GameState {PLAY, PAUSE, GAMEOVER};
     public int lvl = 0;
     public int enemiesDied = 0;
 
@@ -23,8 +23,10 @@ public class GameController : MonoBehaviour
     private bool textInitialRunning = true;
     private bool callInformation = false;
     private bool firstGiant = false;
+    [SerializeField] private GameObject objGameOver;
+    private GameObject objPlayer;
+    private Player scriptPlayer;
 
-    // Start is called before the first frame update
     void Awake(){
         if (gc == null){
             gc = this;
@@ -37,6 +39,8 @@ public class GameController : MonoBehaviour
     void Start()
     {   
         ss = SpawnSystem.ss;
+        objPlayer = GameObject.FindGameObjectWithTag("Player");
+        scriptPlayer = objPlayer.GetComponent<Player>();
     }
     
     void Pause(){
@@ -50,9 +54,20 @@ public class GameController : MonoBehaviour
         gameState = GameState.PLAY;
     }
 
+    void GameOver(){
+        gameState = GameState.GAMEOVER;
+        objGameOver.SetActive(true);
+    }
+
 
     void Update()
-    {
+    {   
+        if(gameState == GameState.GAMEOVER) return;
+
+        if(scriptPlayer.PlayerLife <= 0){
+            GameOver();
+        }
+
         LevelController();
         if(Input.GetKeyDown(KeyCode.P)){
             if(gameState == GameState.PLAY){

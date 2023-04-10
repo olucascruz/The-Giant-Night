@@ -12,32 +12,34 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource electricitySound;
 
     private GameController gc;
-    // Start is called before the first frame update
+
     void Start()
     {   
         gc = GameController.gc;
         SkinAnimation.onUseElectricity += ElectricityPlay;
         SkinAnimation.onEndUseElectricity += ElectricityStop;
+        Sphere.onSoundElectricitySphere += ElectricityPlay;
+        Sphere.onEndSoundElectricitySphere += ElectricityStop;
         Giant.onStepGiant += StepsPlay;
         Giant.onHeavyImpact += HeavyImpactPlay; 
         BackgroundSoundPlay();
     }
 
     void Update(){
-    if (gc.gameState == GameController.GameState.PAUSE)
-    {
-        heavyImpact.Pause();
-        stepsGiant.Pause();
-        electricitySound.Pause();
-        backgroundSound.Pause();
-    }
-    else
-    {
-        heavyImpact.UnPause();
-        stepsGiant.UnPause();
-        electricitySound.UnPause();
-        backgroundSound.UnPause();
-    }
+        if (gc.gameState == GameController.GameState.PAUSE)
+        {
+            heavyImpact.Pause();
+            stepsGiant.Pause();
+            electricitySound.Pause();
+            backgroundSound.Pause();
+        }
+        else
+        {
+            heavyImpact.UnPause();
+            stepsGiant.UnPause();
+            electricitySound.UnPause();
+            backgroundSound.UnPause();
+        }
     
     }
 
@@ -74,6 +76,10 @@ public class SoundManager : MonoBehaviour
         SkinAnimation.onUseElectricity -= ElectricityPlay;
 
         SkinAnimation.onEndUseElectricity -= ElectricityStop;
+
+        Sphere.onSoundElectricitySphere -= ElectricityPlay;
+
+        Sphere.onEndSoundElectricitySphere -= ElectricityStop;
 
         Giant.onStepGiant -= StepsPlay;
         

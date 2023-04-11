@@ -16,8 +16,10 @@ public class Sphere : MonoBehaviour
         if(other.gameObject.tag == "Player"){
                 objRechargeMana.SetActive(true);
             if(Input.GetKeyDown(KeyCode.Mouse1) && canRecharge){
-                StartCoroutine(EffectRecharge());
-                other.gameObject.GetComponent<Player>().RechargeMana = 3;
+                if(other.gameObject.GetComponent<Player>().RechargeMana != 3){
+                    StartCoroutine(EffectRecharge());
+                    other.gameObject.GetComponent<Player>().RechargeMana = 3;
+                }
             }
         }
     }

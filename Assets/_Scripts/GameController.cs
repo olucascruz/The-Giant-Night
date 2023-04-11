@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
     public static GameController gc;
 
     private SpawnSystem ss;
-    public SpawnState spawnState = SpawnState.COUNTING;
+    public SpawnState spawnState = SpawnState.WAITING;
     public GameState gameState = GameState.PLAY;
 
     [SerializeField] private GameObject obejctTextInitial;
@@ -26,6 +26,11 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject objGameOver;
     private GameObject objPlayer;
     private Player scriptPlayer;
+
+    [SerializeField] private GameObject waveInformation;
+    [SerializeField] private TextMeshProUGUI textWaveInformation;
+
+    
 
     void Awake(){
         if (gc == null){
@@ -38,6 +43,7 @@ public class GameController : MonoBehaviour
     
     void Start()
     {   
+        spawnState = SpawnState.WAITING;
         ss = SpawnSystem.ss;
         objPlayer = GameObject.FindGameObjectWithTag("Player");
         scriptPlayer = objPlayer.GetComponent<Player>();
@@ -57,6 +63,7 @@ public class GameController : MonoBehaviour
     void GameOver(){
         gameState = GameState.GAMEOVER;
         objGameOver.SetActive(true);
+        Cursor.visible = true;
     }
 
 
@@ -115,9 +122,21 @@ public class GameController : MonoBehaviour
         StartCoroutine(ShowText(texts,index));    
     }
 
+    void WaveInformation(int n){
+        string[] texts = new string[4];;
+        texts[0] = "Wave 1: Apenas um.";
+        texts[1] = "Wave 2: 3 é demais.";
+        texts[2] = "Wave 3: Horda de gigantes CUIDADO.";
+        texts[3] = "Wave 4: Agora veio todo mundo.";
+
+        textWaveInformation.text = "";
+        textWaveInformation.text = texts[n];
+
+        waveInformation.SetActive(true);
+    }
+
     IEnumerator ShowText(string[] t, int i){
       while(i < t.Length){
-        print(i);
         textInitial.text = "";
         textInitial.text = t[i];
         yield return new WaitForSeconds(3f);
@@ -129,19 +148,24 @@ public class GameController : MonoBehaviour
 
     IEnumerator WaitNextWave(){
         spawnState = SpawnState.COUNTING;
+        WaveInformation(lvl);
         yield return new WaitForSeconds(5f);
+        waveInformation.SetActive(false);
         spawnState = SpawnState.SPAWNING;
         Spawner();
     }
 
     void LevelController(){
+        print(spawnState);
+        if(spawnState != SpawnState.WAITING) return;
+    
         if(lvl == 0 && enemiesDied == 0){
             if(!callInformation){
                 Information();
             }
             if(!textInitialRunning && !firstGiant){
                 spawnState = SpawnState.SPAWNING;
-                Spawner();
+                StartCoroutine(WaitNextWave());
                 firstGiant = true;
             }
         }

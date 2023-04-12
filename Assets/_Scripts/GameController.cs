@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
     private bool callInformation = false;
     private bool firstGiant = false;
     [SerializeField] private GameObject objGameOver;
+    [SerializeField] private TextMeshProUGUI textGameOver;
     private GameObject objPlayer;
     private Player scriptPlayer;
 
@@ -63,6 +64,7 @@ public class GameController : MonoBehaviour
     void GameOver(){
         gameState = GameState.GAMEOVER;
         objGameOver.SetActive(true);
+        textGameOver.text = "Você morreu";
         Cursor.visible = true;
     }
 
@@ -156,7 +158,6 @@ public class GameController : MonoBehaviour
     }
 
     void LevelController(){
-        print(spawnState);
         if(spawnState != SpawnState.WAITING) return;
     
         if(lvl == 0 && enemiesDied == 0){

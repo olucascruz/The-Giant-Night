@@ -11,7 +11,30 @@ public class Sphere : MonoBehaviour
     public static event SphereEventHandler onEndSoundElectricitySphere;
     [SerializeField] private GameObject objRechargeMana;
     [SerializeField] private VisualEffect vfxEletricRecharge;
+    private int sphereLife;
     private bool canRecharge = true;
+    private bool canTakeDamage = true;
+    [SerializeField] private GameObject objGameOver;
+    [SerializeField] private TextMeshProUGUI textGameOver;
+
+    void Start(){
+        sphereLife = 3;
+    }
+    
+    void SphereTakeDamage(){
+        if(canTakeDamage){
+            canTakeDamage = false;
+            sphereLife--;
+            StartCoroutine(TurnIntangible);
+        }
+    }
+
+
+    IEnumerator TurnIntangible(){
+        yield return new WaitForSeconds(2);
+        canTakeDamage = true;
+    }
+
     void OnTriggerStay(Collider other){
         if(other.gameObject.tag == "Player"){
                 objRechargeMana.SetActive(true);

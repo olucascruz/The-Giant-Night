@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
-
+using UnityEngine.UI;
+using TMPro;
 
 public class Sphere : MonoBehaviour
 {
@@ -16,8 +17,9 @@ public class Sphere : MonoBehaviour
     private bool canTakeDamage = true;
     [SerializeField] private GameObject objGameOver;
     [SerializeField] private TextMeshProUGUI textGameOver;
-
+    private GameController gc;
     void Start(){
+        gc = GameController.gc;
         sphereLife = 3;
     }
     
@@ -25,10 +27,16 @@ public class Sphere : MonoBehaviour
         if(canTakeDamage){
             canTakeDamage = false;
             sphereLife--;
-            StartCoroutine(TurnIntangible);
+            StartCoroutine(TurnIntangible());
         }
     }
 
+    void GameOver(){
+        gc.gameState = GameController.GameState.GAMEOVER;
+        objGameOver.SetActive();
+        textGameOver.text = "Orbe protetor destruido";
+        Cursor.visible = true;
+    }
 
     IEnumerator TurnIntangible(){
         yield return new WaitForSeconds(2);

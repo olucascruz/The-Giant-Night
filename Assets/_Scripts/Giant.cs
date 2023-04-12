@@ -6,7 +6,12 @@ using UnityEngine.AI;
 
 
 public class Giant : MonoBehaviour
-{       
+{
+    public enum GiantState {RUNNING, CHASEPLAYER, ATTACKING};
+    public GiantState giantState = GiantState.RUNNING;
+
+
+
     [Header("Movement")]
     private NavMeshAgent agent;
     private GameObject[] target;
@@ -22,12 +27,8 @@ public class Giant : MonoBehaviour
     [SerializeField] VisualEffect attackVFX;
     [Header("State")]
     [SerializeField] bool playerInSighRange, playerInAttackRange;
-
     [SerializeField] private Animator anim;
-
-    
     private Collider otherCollider;
-
     private bool attackCollidingPlayer;
     public delegate void EventHandler();
     public static event EventHandler onAttackPlayer;
@@ -36,6 +37,7 @@ public class Giant : MonoBehaviour
     private int targetSelected;
     private float attackArea;
 
+    private GameController gc;
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -43,15 +45,20 @@ public class Giant : MonoBehaviour
     }
 
     private void Start() {
+        gc = GameController.gc;
         otherCollider =  GameObject.FindGameObjectWithTag("FrontWall").GetComponent<Collider>();
         Physics.IgnoreCollision(GetComponent<Collider>(), otherCollider);
         player =  GameObject.FindGameObjectWithTag("Player").transform;
         target = GameObject.FindGameObjectsWithTag("EnemyTarget");
-        targetSelected = Random.Range(0, 3);    
+        targetSelected = Random.Range(0, 3);
+        agent.stoppingDistance = 1.2f;
     }
 
     void Update()
     {
+        if(gc){
+            if(gc.gameState == GameController.GameState.GAMEOVER) return;
+        }
        playerInSighRange = Physics.CheckSphere(transform.position, sighRange, whatIsPlayer);
        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
@@ -65,19 +72,22 @@ public class Giant : MonoBehaviour
     }
 
     private void Running(){
+        giantState = GiantState.RUNNING;
         if(!walkPointSet){
             SearchWalkPoint();
         }
-
-        if(walkPointSet){            
+        Vector3 distanceToWalkPoint = transform.position - walkPoint;
+        
+        if(walkPointSet && distanceToWalkPoint.magnitude > 2f ){            
             agent.isStopped = false;
             agent.SetDestination(walkPoint);
             anim.SetBool("walking", true);
         }
 
-        Vector3 distanceToWalkPoint = transform.position - walkPoint;
 
-        if(distanceToWalkPoint.magnitude < 2f){
+        if(distanceToWalkPoint.magnitude <= 2f){
+            agent.isStopped = false;
+            anim.SetBool("walking", false);
             AttackPlayer();
         }
 
@@ -93,20 +103,27 @@ public class Giant : MonoBehaviour
     }
 
     private void ChasePlayer(){
-        agent.isStopped = false;
-        agent.SetDestination(player.position);
-        anim.SetBool("walking", true);
+        giantState = GiantState.CHASEPLAYER;
 
+        if(agent.remainingDistance <= agent.stoppingDistance){
+            agent.isStopped = true;
+            anim.SetBool("walking", false);
+        }else{
+            agent.isStopped = false;
+            agent.SetDestination(player.position);
+            anim.SetBool("walking", true);
+        }
     }
 
     private void AttackPlayer(){
-        Vector3 distanceToPlayer = transform.position - player.position; 
+        giantState = GiantState.ATTACKING;
         
         if(!alreadyAttacked)
         {
             alreadyAttacked = true;
-            if(distanceToPlayer.magnitude <  attackRange - 1f){
-            agent.isStopped = true;
+            if(agent.remainingDistance <= agent.stoppingDistance){
+                agent.isStopped = true;
+                anim.SetBool("walking", false);
             }   
             anim.SetTrigger("attack");
             StartCoroutine(Attack());
@@ -115,17 +132,20 @@ public class Giant : MonoBehaviour
     }
 
     IEnumerator ResetAttack()
-    {
+    {   
+        float origialAttackRange = attackRange;
+        attackRange = 0.1f;
         yield return new WaitForSeconds(timeBetweenAttacks);
+        attackRange = origialAttackRange;
         alreadyAttacked = false;
     }
 
     IEnumerator Attack(){
         attackArea = 0.1f;
+        yield return new WaitForSeconds(0.2f);
         while(attackArea < attackRange){
             yield return new WaitForSeconds(0.2f);
             SetAttackSize(attackArea);
-            yield return new WaitForSeconds(0.05f);
             attackArea += 0.4f;
         }
         
@@ -133,6 +153,7 @@ public class Giant : MonoBehaviour
             attackVFX.Stop();
             attackArea = 0.1f;
             SetAttackSize(attackArea);
+            giantState = GiantState.CHASEPLAYER;
             StartCoroutine(ResetAttack());
         }
     }
@@ -154,6 +175,8 @@ public class Giant : MonoBehaviour
     {
         onHeavyImpact?.Invoke();   
     }
+
+
     private void OnDrawGizmosSelected() {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);

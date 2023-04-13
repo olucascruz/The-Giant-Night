@@ -30,6 +30,10 @@ public class Enemy : MonoBehaviour
 
     }
 
+    private void OnEnable() {
+        enemyLife = giantAttributes.lifeGiant;
+    }
+
 
    void OnTriggerEnter(Collider other) 
     {

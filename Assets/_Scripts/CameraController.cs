@@ -17,16 +17,20 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Transform cameraPivot;
     [SerializeField] private Transform cam;
     [SerializeField] private float velCam;
-
+    private GameController gc;
     // Start is called before the first frame update
     void Start()
     {   
+        gc = GameController.gc;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     { 
+        if(gc){
+            if(gc.gameState == GameController.GameState.GAMEOVER) return;
+        }
         if (playerTransform){
             rotationX = Mathf.Lerp(rotationX, Input.GetAxisRaw("Mouse X")*2, 100 * Time.deltaTime);
             rotationY = Mathf.Clamp(

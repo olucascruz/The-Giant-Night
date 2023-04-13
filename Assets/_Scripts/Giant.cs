@@ -7,7 +7,7 @@ using UnityEngine.AI;
 
 public class Giant : MonoBehaviour
 {
-    public enum GiantState {RUNNING, CHASEPLAYER, ATTACKING};
+    public enum GiantState {RUNNING, CHASEPLAYER, ATTACKING, STOPPED};
     public GiantState giantState = GiantState.RUNNING;
 
 
@@ -16,7 +16,7 @@ public class Giant : MonoBehaviour
     private NavMeshAgent agent;
     private GameObject[] target;
     private Transform player;
-    [SerializeField] private LayerMask whatIsGround, whatIsPlayer;
+    [SerializeField] private LayerMask whatIsGround, whatIsPlayer, whatIsSphere;
     private Vector3 walkPoint; 
     private bool walkPointSet = false;
     [SerializeField] private float walkPointRange;
@@ -30,8 +30,10 @@ public class Giant : MonoBehaviour
     [SerializeField] private Animator anim;
     private Collider otherCollider;
     private bool attackCollidingPlayer;
+    private bool attackCollidingSphere;
     public delegate void EventHandler();
     public static event EventHandler onAttackPlayer;
+    public static event EventHandler onAttackSphere;
     public static event EventHandler onStepGiant;
     public static event EventHandler onHeavyImpact;
     private int targetSelected;
@@ -57,13 +59,20 @@ public class Giant : MonoBehaviour
     void Update()
     {
         if(gc){
-            if(gc.gameState == GameController.GameState.GAMEOVER) return;
+            if(gc.gameState == GameController.GameState.GAMEOVER) {
+            gameObject.SetActive(false);
+            return;
+            }
         }
        playerInSighRange = Physics.CheckSphere(transform.position, sighRange, whatIsPlayer);
        playerInAttackRange = Physics.CheckSphere(transform.position, attackRange, whatIsPlayer);
 
        if(attackCollidingPlayer){
             onAttackPlayer?.Invoke();
+        }
+
+        if(attackCollidingSphere){
+            onAttackSphere?.Invoke();
         }
 
        if(!playerInSighRange && !playerInAttackRange) Running();
@@ -161,6 +170,7 @@ public class Giant : MonoBehaviour
     void SetAttackSize(float attackSize){
         attackVFX.SetFloat("SizeArea", attackSize);
         attackCollidingPlayer = Physics.CheckSphere(transform.position, attackSize, whatIsPlayer);
+        attackCollidingSphere = Physics.CheckSphere(transform.position, attackSize, whatIsSphere);
     }
 
     //Eventos ativados por animação

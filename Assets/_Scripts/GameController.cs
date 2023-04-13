@@ -66,6 +66,7 @@ public class GameController : MonoBehaviour
         objGameOver.SetActive(true);
         textGameOver.text = "Você morreu";
         Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
 

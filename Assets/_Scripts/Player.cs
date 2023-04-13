@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -39,7 +41,7 @@ public class Player : MonoBehaviour
 
     private GameController gc;
   
-
+    private bool canTakeDamage = true;
     void Start()
     {
         gc = GameController.gc;
@@ -50,6 +52,9 @@ public class Player : MonoBehaviour
         rb = this.GetComponent<Rigidbody>();
     }
     private void Update() {
+        if(gc){
+            if(gc.gameState == GameController.GameState.GAMEOVER) return;
+        }
         dir = this.transform.TransformVector(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical") ).normalized);
         SpeedControl();
     }
@@ -57,6 +62,9 @@ public class Player : MonoBehaviour
  
     void FixedUpdate()
     {   
+        if(gc){
+            if(gc.gameState == GameController.GameState.GAMEOVER) return;
+        }
         if(RechargeMana > 3){
             RechargeMana = 3;
         }
@@ -142,9 +150,9 @@ public class Player : MonoBehaviour
             isGround = false;
         }
     }
-
+   
     private void TakeDamage(){
-        if(isGround){
+        if(isGround && canTakeDamage){
             rb.AddForce(-transform.forward * 5f, ForceMode.Impulse);
             rb.AddForce(transform.up * 1.5f, ForceMode.Impulse);
             StartCoroutine(DecrementLife());
@@ -152,9 +160,11 @@ public class Player : MonoBehaviour
     }
     
     private IEnumerator DecrementLife(){
-        if(playerLife > 0)
-            playerLife--;
-        yield return new WaitForSeconds(0.2f);
+        if(playerLife > 0) playerLife--;
+        SetCanTakeDamage();
+        canTakeDamage = false;
+        yield return new WaitForSeconds(1f);
+        canTakeDamage = true;
     }
 
     private void UseMana(){

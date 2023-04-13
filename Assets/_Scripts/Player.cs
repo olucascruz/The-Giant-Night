@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public class Player : MonoBehaviour
 {
@@ -161,7 +159,6 @@ public class Player : MonoBehaviour
     
     private IEnumerator DecrementLife(){
         if(playerLife > 0) playerLife--;
-        SetCanTakeDamage();
         canTakeDamage = false;
         yield return new WaitForSeconds(1f);
         canTakeDamage = true;

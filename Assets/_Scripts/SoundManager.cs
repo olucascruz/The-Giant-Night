@@ -64,8 +64,9 @@ public class SoundManager : MonoBehaviour
     }
 
     private void PlaySoundEffect(AudioSource SFX){
-        
+        if (gc.gameState == GameController.GameState.PLAY){
             SFX.Play();
+        }
     }
 
     private void StopSoundEffect(AudioSource SFX){

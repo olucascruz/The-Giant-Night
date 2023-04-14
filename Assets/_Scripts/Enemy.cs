@@ -32,6 +32,7 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable() {
         enemyLife = giantAttributes.lifeGiant;
+        canTakeDamage = true;
     }
 
 

@@ -15,12 +15,14 @@ public class GameController : MonoBehaviour
     public static GameController gc;
 
     private SpawnSystem ss;
+    private SceneChange sc;
     public SpawnState spawnState = SpawnState.WAITING;
     public GameState gameState = GameState.PLAY;
 
     [SerializeField] private GameObject obejctTextInitial;
     [SerializeField] private TextMeshProUGUI textInitial;
     private bool textInitialRunning = true;
+    private bool textFinalRunning = false;
     private bool callInformation = false;
     private bool firstGiant = false;
     [SerializeField] private GameObject objGameOver;
@@ -45,6 +47,7 @@ public class GameController : MonoBehaviour
     {   
         spawnState = SpawnState.WAITING;
         ss = SpawnSystem.ss;
+        sc = SceneChange.sc;
         objPlayer = GameObject.FindGameObjectWithTag("Player");
         scriptPlayer = objPlayer.GetComponent<Player>();
     }
@@ -138,11 +141,16 @@ public class GameController : MonoBehaviour
     }
 
     IEnumerator ShowText(string[] t, int i){
+      obejctTextInitial.SetActive(true);
       while(i < t.Length){
         textInitial.text = "";
         textInitial.text = t[i];
         yield return new WaitForSeconds(5f);
         i++;
+      }
+      if(textFinalRunning){
+        textFinalRunning = false;
+        lvl++;
       }
       textInitialRunning = false;
       obejctTextInitial.SetActive(false);
@@ -190,7 +198,22 @@ public class GameController : MonoBehaviour
         }
         if(lvl == 3 && enemiesDied == 9){
             enemiesDied = 0;
+            EndInformation();
         }
+        if(lvl == 4){
+            sc.QuitSceneGame();
+        }
+    }
+
+    void EndInformation(){
+        string[] texts = new string[4];;
+        texts[0] = "Você conseguiu deter todos os gigantes nessa noite";
+        texts[1] = "Bom trabalho, sem você não restaria nada da vila";
+        texts[2] = "Agora você pode voltar a ser o eletricista da vila";
+        texts[3] = "A vila nunca vai esquecer quem a protegeu.";
+        int index = 0;
+        textFinalRunning = true;
+        StartCoroutine(ShowText(texts,index));
     }
 
 }

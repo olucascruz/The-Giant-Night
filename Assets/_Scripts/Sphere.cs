@@ -21,6 +21,16 @@ public class Sphere : MonoBehaviour
     void Start(){
         gc = GameController.gc;
         sphereLife = 3;
+        Giant.onAttackSphere += SphereTakeDamage;
+    }
+
+    void Update(){
+        if(gc.gameState == GameController.GameState.GAMEOVER){
+            return;
+        }
+        if(sphereLife <= 0){
+            GameOver();
+        }
     }
     
     void SphereTakeDamage(){
@@ -33,9 +43,10 @@ public class Sphere : MonoBehaviour
 
     void GameOver(){
         gc.gameState = GameController.GameState.GAMEOVER;
-        objGameOver.SetActive();
+        objGameOver.SetActive(true);
         textGameOver.text = "Orbe protetor destruido";
         Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     IEnumerator TurnIntangible(){
@@ -69,5 +80,8 @@ public class Sphere : MonoBehaviour
         if(other.gameObject.tag == "Player"){
                 objRechargeMana.SetActive(false);
         }
+    }
+    private void OnDestroy() {
+        Giant.onAttackSphere -= SphereTakeDamage;
     }
 }

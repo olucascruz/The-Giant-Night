@@ -36,7 +36,6 @@ public class GameController : MonoBehaviour
     void Awake(){
         if (gc == null){
             gc = this;
-            DontDestroyOnLoad(gameObject);
         } else {
             Destroy(gameObject);
         }
@@ -142,7 +141,7 @@ public class GameController : MonoBehaviour
       while(i < t.Length){
         textInitial.text = "";
         textInitial.text = t[i];
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
         i++;
       }
       textInitialRunning = false;
